@@ -1,16 +1,19 @@
 {
-	"name": "decompress",
+	"name": "@atomic-reactor/decompress",
 	"version": "4.2.0",
 	"description": "Extracting archives made easy",
 	"license": "MIT",
-	"repository": "kevva/decompress",
+	"repository": {
+    "type": "git",
+    "url": "https://github.com/Atomic-Reactor/decompress.git"
+  },
 	"author": {
 		"name": "Kevin Mårtensson",
 		"email": "kevinmartensson@gmail.com",
 		"url": "github.com/kevva"
 	},
 	"engines": {
-		"node": ">=4"
+		"node": ">=8"
 	},
 	"scripts": {
 		"test": "xo && ava"
@@ -41,9 +44,20 @@
 	},
 	"devDependencies": {
 		"ava": "*",
+		"esm": "^3.2.25",
 		"is-jpg": "^1.0.0",
 		"path-exists": "^3.0.0",
 		"pify": "^2.3.0",
 		"xo": "*"
+	},
+	"ava": {
+		"require": [
+			"esm"
+		]
+	},
+	"xo": {
+		"rules": {
+			"promise/prefer-await-to-then": "off"
+		}
 	}
 }

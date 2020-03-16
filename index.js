@@ -11,30 +11,46 @@ const stripDirs = require('strip-dirs');
 
 const fsP = pify(fs);
 
-const runPlugins = (input, opts) => {
-	if (opts.plugins.length === 0) {
+const runPlugins = (input, options) => {
+	if (options.plugins.length === 0) {
 		return Promise.resolve([]);
 	}
 
-	return Promise.all(opts.plugins.map(x => x(input, opts))).then(files => files.reduce((a, b) => a.concat(b)));
+	return Promise.all(options.plugins.map(x => x(input, options))).then(files => files.reduce((a, b) => a.concat(b)));
 };
 
-const extractFile = (input, output, opts) => runPlugins(input, opts).then(files => {
-	if (opts.strip > 0) {
+/**
+ * Addresses https://www.npmjs.com/advisories/1217
+ * Resolve relative path to target and prevent parent relative paths.
+ */
+const isSafePath = file => {
+	const target = path.resolve('./');
+	const resolvedRelative = path.relative(
+		target,
+		path.resolve(target, file.path)
+	);
+
+	return !/^\.{2}/.test(resolvedRelative);
+};
+
+const extractFile = (input, output, options) => runPlugins(input, options).then(files => {
+	files = files.filter(isSafePath);
+
+	if (options.strip > 0) {
 		files = files
 			.map(x => {
-				x.path = stripDirs(x.path, opts.strip);
+				x.path = stripDirs(x.path, options.strip);
 				return x;
 			})
 			.filter(x => x.path !== '.');
 	}
 
-	if (typeof opts.filter === 'function') {
-		files = files.filter(opts.filter);
+	if (typeof options.filter === 'function') {
+		files = files.filter(options.filter);
 	}
 
-	if (typeof opts.map === 'function') {
-		files = files.map(opts.map);
+	if (typeof options.map === 'function') {
+		files = files.map(options.map);
 	}
 
 	if (!output) {
@@ -73,24 +89,24 @@ const extractFile = (input, output, opts) => runPlugins(input, opts).then(files 
 	}));
 });
 
-module.exports = (input, output, opts) => {
+module.exports = (input, output, options) => {
 	if (typeof input !== 'string' && !Buffer.isBuffer(input)) {
 		return Promise.reject(new TypeError('Input file required'));
 	}
 
 	if (typeof output === 'object') {
-		opts = output;
+		options = output;
 		output = null;
 	}
 
-	opts = Object.assign({plugins: [
+	options = Object.assign({plugins: [
 		decompressTar(),
 		decompressTarbz2(),
 		decompressTargz(),
 		decompressUnzip()
-	]}, opts);
+	]}, options);
 
 	const read = typeof input === 'string' ? fsP.readFile(input) : Promise.resolve(input);
 
-	return read.then(buf => extractFile(buf, output, opts));
+	return read.then(buf => extractFile(buf, output, options));
 };

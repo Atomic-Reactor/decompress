@@ -81,6 +81,12 @@ test('filter option', async t => {
 	t.is(files.length, 0);
 });
 
+test('filter unsafe parent relative paths', async t => {
+	const files = await m(path.join(__dirname, 'fixtures', 'slip.tar.gz'));
+
+	t.is(files.length, 0);
+});
+
 test('map option', async t => {
 	const files = await m(path.join(__dirname, 'fixtures', 'file.tar'), {
 		map: x => {
