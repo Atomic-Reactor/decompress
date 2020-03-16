@@ -1,4 +1,7 @@
-# decompress [![Build Status](https://travis-ci.org/kevva/decompress.svg?branch=master)](https://travis-ci.org/kevva/decompress)
+# @atomic-reactor/decompress [![Build Status](https://api.travis-ci.org/Atomic-Reactor/decompress.svg?branch=master)](https://github.com/Atomic-Reactor/decompress.git)
+
+Fork of [decompress](https://travis-ci.org/kevva/decompress) to prevent [Zip Slip](https://www.npmjs.com/advisories/1217). This
+prevents this problem by filtering out any files that resolve to a parent path.
 
 > Extracting archives made easy
 
@@ -7,7 +10,7 @@
 ## Install
 
 ```
-$ npm install decompress
+$ npm install @atomic-reactor/decompress
 ```
 
 
