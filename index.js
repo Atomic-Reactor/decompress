@@ -19,22 +19,40 @@ const runPlugins = (input, options) => {
 	return Promise.all(options.plugins.map(x => x(input, options))).then(files => files.reduce((a, b) => a.concat(b)));
 };
 
+const parentRelative = filePath => /^\.{2}/.test(filePath);
+
+const notCurrentDir = ({path}) => !['.', './', '.' + path.sep].includes(path);
+
 /**
  * Addresses https://www.npmjs.com/advisories/1217
  * Resolve relative path to target and prevent parent relative paths.
  */
 const isSafePath = file => {
 	const target = path.resolve('./');
-	const resolvedRelative = path.relative(
+
+	if (parentRelative(path.relative(
 		target,
 		path.resolve(target, file.path)
-	);
+	))) {
+		return false;
+	}
 
-	return !/^\.{2}/.test(resolvedRelative);
+	if (file.linkname) {
+		const resolvedRelativeLink = path.relative(
+			target,
+			path.resolve(target, file.linkname)
+		);
+
+		if (parentRelative(resolvedRelativeLink)) {
+			return false;
+		}
+	}
+
+	return true;
 };
 
 const extractFile = (input, output, options) => runPlugins(input, options).then(files => {
-	files = files.filter(isSafePath);
+	files = files.filter(isSafePath).filter(notCurrentDir);
 
 	if (options.strip > 0) {
 		files = files
@@ -42,7 +60,7 @@ const extractFile = (input, output, options) => runPlugins(input, options).then(
 				x.path = stripDirs(x.path, options.strip);
 				return x;
 			})
-			.filter(x => x.path !== '.');
+			.filter(notCurrentDir);
 	}
 
 	if (typeof options.filter === 'function') {

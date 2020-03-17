@@ -52,6 +52,7 @@ test.serial('extract file to directory', async t => {
 
 test('extract symlink', async t => {
 	await m(path.join(__dirname, 'fixtures', 'symlink.tar'), __dirname, {strip: 1});
+
 	t.is(await fsP.realpath(path.join(__dirname, 'symlink')), path.join(__dirname, 'file.txt'));
 	await fsP.unlink(path.join(__dirname, 'symlink'));
 	await fsP.unlink(path.join(__dirname, 'file.txt'));
@@ -85,6 +86,12 @@ test('filter unsafe parent relative paths', async t => {
 	const files = await m(path.join(__dirname, 'fixtures', 'slip.tar.gz'));
 
 	t.is(files.length, 0);
+});
+
+test('filter unsafe parent symlink traversal paths', async t => {
+	const files = await m(path.join(__dirname, 'fixtures', 'ln-slip.tgz'));
+
+	t.is(files.length, 1);
 });
 
 test('map option', async t => {
