@@ -17,7 +17,7 @@ $ npm install @atomic-reactor/decompress
 ## Usage
 
 ```js
-const decompress = require('decompress');
+const decompress = require('@atomic-reactor/decompress');
 
 decompress('unicorn.zip', 'dist').then(files => {
 	console.log('done!');
