@@ -1,6 +1,6 @@
 {
 	"name": "@atomic-reactor/decompress",
-	"version": "4.2.1",
+	"version": "4.2.2",
 	"description": "Extracting archives made easy",
 	"license": "MIT",
 	"repository": {
@@ -57,6 +57,8 @@
 	},
 	"xo": {
 		"rules": {
+			"capitalized-comments": "off",
+			"node/no-deprecated-api": "off",
 			"promise/prefer-await-to-then": "off"
 		}
 	}

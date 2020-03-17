@@ -78,6 +78,7 @@ const extractFile = (input, output, options) => runPlugins(input, options).then(
 	return Promise.all(files.map(x => {
 		const dest = path.join(output, x.path);
 		const mode = x.mode & ~process.umask();
+
 		const now = new Date();
 
 		if (x.type === 'directory') {
@@ -88,6 +89,10 @@ const extractFile = (input, output, options) => runPlugins(input, options).then(
 
 		return makeDir(path.dirname(dest))
 			.then(() => {
+				if (options.followSymlinks !== true && fs.realpathSync(path.dirname(dest)) !== path.dirname(dest)) {
+					return Promise.reject(new Error('symlinks not permitted'));
+				}
+
 				if (x.type === 'link') {
 					return fsP.link(x.linkname, dest);
 				}

@@ -94,6 +94,19 @@ test('filter unsafe parent symlink traversal paths', async t => {
 	t.is(files.length, 1);
 });
 
+test('do not follow symlinks', async t => {
+	const thru = path.join(__dirname, 'thru');
+	const victim = path.join(__dirname, 'real');
+	await fsP.mkdir(victim);
+	await fsP.symlink(path.relative(__dirname, victim), thru);
+
+	await t.throwsAsync(() => m(path.join(__dirname, 'fixtures', 'ln-no-follow.tgz'), __dirname));
+	t.false(fs.existsSync(path.join(victim, 'drive.txt')));
+
+	await fsP.unlink(thru);
+	await fsP.rmdir(victim);
+});
+
 test('map option', async t => {
 	const files = await m(path.join(__dirname, 'fixtures', 'file.tar'), {
 		map: x => {
@@ -112,7 +125,7 @@ test.serial('set mtime', async t => {
 	await fsP.unlink(path.join(__dirname, 'test.jpg'));
 });
 
-test('return emptpy array if no plugins are set', async t => {
+test('return empty array if no plugins are set', async t => {
 	const files = await m(path.join(__dirname, 'fixtures', 'file.tar'), {plugins: []});
 	t.is(files.length, 0);
 });
