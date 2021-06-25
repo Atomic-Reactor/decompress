@@ -1,6 +1,6 @@
 {
 	"name": "@atomic-reactor/decompress",
-	"version": "4.2.4",
+	"version": "4.2.5",
 	"description": "Extracting archives made easy",
 	"license": "MIT",
 	"repository": {
@@ -13,11 +13,11 @@
 		"url": "github.com/kevva"
 	},
 	"engines": {
-		"node": "12.13.0",
+		"node": ">=12.13.0",
 		"npm": ">=6.12.0"
 	},
 	"scripts": {
-		"test": "xo && ava"
+		"test": "ava"
 	},
 	"files": [
 		"index.js"
@@ -48,8 +48,7 @@
 		"esm": "^3.2.25",
 		"is-jpg": "^1.0.0",
 		"path-exists": "^3.0.0",
-		"pify": "^2.3.0",
-		"xo": "*"
+		"pify": "^2.3.0"
 	},
 	"ava": {
 		"require": [
